@@ -12,7 +12,7 @@
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 const log = (...a) => console.log(new Date().toISOString().slice(0, 19).replace('T', ' '), ...a);
 
 // ── Einstellungen ──
@@ -25,7 +25,16 @@ function settings() {
   }
   const server = String(process.env.AKARI_SERVER || opts.server || '').trim().replace(/\/+$/, '');
   const code = String(process.env.AKARI_CODE || opts.code || '').trim();
-  const supervisor = process.env.SUPERVISOR_TOKEN;
+  // Als Add-on: Zugang über den Supervisor. s6 gibt die Umgebung nicht immer weiter, dann aus seiner Ablage lesen.
+  let supervisor = process.env.SUPERVISOR_TOKEN || '';
+  if (!supervisor && opts.server) {
+    for (const f of ['/run/s6/container_environment/SUPERVISOR_TOKEN', '/var/run/s6/container_environment/SUPERVISOR_TOKEN']) {
+      try {
+        supervisor = readFileSync(f, 'utf8').trim();
+        if (supervisor) break;
+      } catch {}
+    }
+  }
   const ha = supervisor
     ? { url: 'http://supervisor/core', ws: 'ws://supervisor/core/websocket', token: supervisor }
     : { url: String(process.env.HA_URL || '').replace(/\/+$/, ''), token: String(process.env.HA_TOKEN || '') };

@@ -5,4 +5,5 @@ FROM ${BUILD_FROM}
 RUN apk add --no-cache nodejs
 
 COPY bridge.mjs /opt/akari-bridge/bridge.mjs
-CMD ["node", "/opt/akari-bridge/bridge.mjs"]
+# with-contenv: gibt SUPERVISOR_TOKEN (Zugang zu Home Assistant) an das Programm weiter
+CMD ["/command/with-contenv", "node", "/opt/akari-bridge/bridge.mjs"]
