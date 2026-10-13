@@ -1,5 +1,5 @@
 name: AKARI-Brücke
-version: "1.0.1"
+version: "1.1.0"
 slug: akari_bridge
 description: Verbindet Home Assistant mit AKARI, ohne Tunnel und ohne Portfreigabe.
 url: https://github.com/TheLordNene/akari-addons/tree/main/akari-bridge

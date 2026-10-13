@@ -15,6 +15,8 @@ Die Brücke darf nur:
 - Bereiche, Geräte und Entitäten lesen (für die Räume in AKARI)
 - Lampen ein- und ausschalten und dimmen
 - Szenen auslösen
+- Steckdosen, Schalter, Helfer und Lüfter ein- und ausschalten (ab 1.1.0)
+- Bei Heizung und Klimaanlage Zieltemperatur und Betriebsart einstellen (ab 1.1.0)
 
 Alles andere lehnt sie ab, zum Beispiel Schlösser, Alarmanlagen, Automationen oder den Verlauf,
 auch wenn AKARI danach fragen sollte.

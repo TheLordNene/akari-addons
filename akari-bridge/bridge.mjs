@@ -102,17 +102,30 @@ function registry() {
 }
 
 // ── Erlaubte Aufträge (dieselbe Liste wie auf dem AKARI-Server) ──
-const SERVICE = /^\/api\/services\/(light\/turn_on|light\/turn_off|scene\/turn_on)$/;
-const ENTITY = /^(light|scene)\.[a-z0-9_]+$/;
+// Lampen, Szenen, Schalter (Steckdosen, Helfer, Lüfter) und Heizung. Jeder Dienst nur für
+// Entitäten seiner eigenen Art: light.turn_on schaltet nie ein Schloss.
+const SERVICE = /^\/api\/services\/(light\/turn_(on|off)|scene\/turn_on|(switch|input_boolean|fan)\/turn_(on|off)|climate\/set_(temperature|hvac_mode))$/;
+const ENTITY = /^[a-z_]+\.[a-z0-9_]+$/;
+const HVAC = new Set(['off', 'heat', 'cool', 'heat_cool', 'auto', 'dry', 'fan_only']);
 async function run(job) {
   if (job.type === 'registry') return registry();
   if (job.type === 'rest' && job.method === 'GET' && (job.path === '/api/states' || job.path === '/api/config')) return rest('GET', job.path);
   if (job.type === 'rest' && job.method === 'POST' && SERVICE.test(job.path)) {
+    const domain = job.path.split('/')[3];
     const ids = [].concat(job.body?.entity_id ?? []);
-    if (!ids.length || ids.length > 100 || !ids.every((id) => typeof id === 'string' && ENTITY.test(id))) throw new Error('Ungültige Entitäten');
+    if (!ids.length || ids.length > 100 || !ids.every((id) => typeof id === 'string' && ENTITY.test(id) && id.startsWith(`${domain}.`))) throw new Error('Ungültige Entitäten');
     const body = { entity_id: ids };
     const bri = Number(job.body?.brightness_pct);
     if (job.path.endsWith('light/turn_on') && Number.isFinite(bri)) body.brightness_pct = Math.max(1, Math.min(100, Math.round(bri)));
+    if (job.path.endsWith('climate/set_temperature')) {
+      const t = Number(job.body?.temperature);
+      if (!Number.isFinite(t) || t < -30 || t > 60) throw new Error('Ungültige Temperatur');
+      body.temperature = t;
+    }
+    if (job.path.endsWith('climate/set_hvac_mode')) {
+      if (!HVAC.has(job.body?.hvac_mode)) throw new Error('Ungültige Betriebsart');
+      body.hvac_mode = job.body.hvac_mode;
+    }
     return rest('POST', job.path, body);
   }
   throw new Error('Auftrag nicht erlaubt');
