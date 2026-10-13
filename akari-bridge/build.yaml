@@ -1,0 +1,4 @@
+# Gemeinsames Basis-Image für amd64 und arm64 (Home Assistant, seit 2026.03)
+build_from:
+  aarch64: ghcr.io/home-assistant/base:3.24
+  amd64: ghcr.io/home-assistant/base:3.24

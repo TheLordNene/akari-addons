@@ -1,0 +1,19 @@
+name: AKARI-Brücke
+version: "1.0.0"
+slug: akari_bridge
+description: Verbindet Home Assistant mit AKARI, ohne Tunnel und ohne Portfreigabe.
+url: https://github.com/TheLordNene/akari-addons/tree/main/akari-bridge
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: application
+boot: auto
+# Zugang zur Home-Assistant-API über den Supervisor (kein Token nötig)
+homeassistant_api: true
+options:
+  server: https://akari.lucidian.dev
+  code: ""
+schema:
+  server: url
+  code: password

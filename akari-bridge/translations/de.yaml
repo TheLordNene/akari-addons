@@ -1,0 +1,7 @@
+configuration:
+  server:
+    name: AKARI-Adresse
+    description: Die Adresse deines AKARI, z. B. https://akari.lucidian.dev
+  code:
+    name: Kopplungscode
+    description: Aus AKARI unter Einstellungen → Verbindungen → Home Assistant → Brücke einrichten.
